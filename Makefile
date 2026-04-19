@@ -3,15 +3,18 @@ TARGET = sha0sum
 
 # Detección de sistema operativo
 ifeq ($(OS),Windows_NT)
-    # Configuración para Windows
+    # Configuración agresiva para MSVC (cl)
     EXE = $(TARGET).exe
     RM = del /Q
-    CFLAGS = -O2 -Wall
+    # /O2 (Optimización), /W4 (Nivel de alertas alto), /Fe (Nombre del output)
+    CC = cl
+    CFLAGS = /O2 /W4 /MD /D_CRT_SECURE_NO_WARNINGS
+    COMPILE = $(CC) $(CFLAGS) sha0sum.c /Fe:$(EXE)
 else
     # Configuración para Linux
     EXE = $(TARGET)
     RM = rm -f
-    CFLAGS = -O2 -Wall
+    CFLAGS = -O3 -Wall
 endif
 
 # Regla principal: Compilar el ejecutable
