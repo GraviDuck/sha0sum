@@ -1,30 +1,28 @@
-# Nombre del ejecutable
 TARGET = sha0sum
 
-# Detección de sistema operativo
 ifeq ($(OS),Windows_NT)
-    # Configuración agresiva para MSVC (cl)
+    # Configuración para Windows (MSVC - cl)
     EXE = $(TARGET).exe
     RM = del /Q
-    # /O2 (Optimización), /W4 (Nivel de alertas alto), /Fe (Nombre del output)
     CC = cl
+    # En MSVC, el nombre del archivo de salida se pone con /Fe:
+    OUT_FLAG = /Fe:$(EXE)
     CFLAGS = /O2 /W4 /MD /D_CRT_SECURE_NO_WARNINGS
-    COMPILE = $(CC) $(CFLAGS) sha0sum.c /Fe:$(EXE)
 else
-    # Configuración para Linux
+    # Configuración para Linux (GCC)
     EXE = $(TARGET)
     RM = rm -f
+    CC = gcc
+    OUT_FLAG = -o $(EXE)
     CFLAGS = -O3 -Wall
 endif
 
-# Regla principal: Compilar el ejecutable
+# Regla principal corregida usando variables
 $(EXE): sha0sum.c
-	gcc $(CFLAGS) sha0sum.c -o $(EXE)
+	$(CC) $(CFLAGS) sha0sum.c $(OUT_FLAG)
 
-# Regla para limpiar archivos basura
 clean:
-	$(RM) $(EXE) *.obj *.o
+	$(RM) $(EXE) *.obj *.o 2>nul || true
 
-# Regla para ejecutar una prueba rápida (abc)
 test: $(EXE)
 	./$(EXE) abc
